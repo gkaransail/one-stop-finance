@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# Node
+node_modules/
+.next/
+out/
+dist/
+.turbo/
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.env
+
+# Docker
+docker-compose.override.yml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# ML models (large files — tracked separately)
+backend/app/ml/models/*.pkl
+backend/app/ml/models/*.joblib
+backend/app/ml/models/*.pt
+backend/app/ml/models/*.h5
+
+# Database
+*.db
+*.sqlite
+
+# Alembic
+backend/alembic/versions/*.pyc

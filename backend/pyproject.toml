@@ -1,0 +1,73 @@
+[tool.poetry]
+name = "one-stop-finance-api"
+version = "0.1.0"
+description = "One Stop Finance — FastAPI Backend"
+authors = ["One Stop Finance Team"]
+python = "^3.12"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+# ─── Web Framework ────────────────────────────────────────────────────────────
+fastapi = "^0.115.0"
+uvicorn = {extras = ["standard"], version = "^0.32.0"}
+python-multipart = "^0.0.12"
+
+# ─── Database ─────────────────────────────────────────────────────────────────
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.36"}
+asyncpg = "^0.30.0"
+alembic = "^1.14.0"
+
+# ─── Validation ───────────────────────────────────────────────────────────────
+pydantic = {extras = ["email"], version = "^2.10.0"}
+pydantic-settings = "^2.6.0"
+
+# ─── Auth ─────────────────────────────────────────────────────────────────────
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+
+# ─── Cache & Queue ────────────────────────────────────────────────────────────
+redis = {extras = ["hiredis"], version = "^5.2.0"}
+celery = {extras = ["redis"], version = "^5.4.0"}
+
+# ─── Data & Finance ───────────────────────────────────────────────────────────
+yfinance = "^0.2.50"
+pandas = "^2.2.0"
+pandas-ta = "^0.3.14b"
+httpx = "^0.28.0"
+feedparser = "^6.0.11"
+
+# ─── Payments ─────────────────────────────────────────────────────────────────
+stripe = "^11.4.0"
+
+# ─── ML / NLP ─────────────────────────────────────────────────────────────────
+transformers = "^4.47.0"
+torch = {version = "^2.5.0", optional = true}
+scikit-learn = "^1.6.0"
+numpy = "^2.2.0"
+
+[tool.poetry.extras]
+ml = ["torch"]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.0"
+pytest-asyncio = "^0.24.0"
+pytest-cov = "^6.0.0"
+httpx = "^0.28.0"
+ruff = "^0.8.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

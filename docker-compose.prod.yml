@@ -1,0 +1,29 @@
+services:
+
+  postgres:
+    restart: always
+    ports: []  # no external exposure in production
+
+  redis:
+    restart: always
+    ports: []
+
+  api:
+    restart: always
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+    volumes: []  # no bind mount in prod — use image only
+
+  worker:
+    restart: always
+    volumes: []
+
+  beat:
+    restart: always
+    volumes: []
+
+  frontend:
+    restart: always
+    command: node server.js
+    volumes: []
+    environment:
+      NODE_ENV: production
