@@ -4,11 +4,7 @@ import { Topbar } from './Topbar'
 import { useUiStore } from '@/stores/ui.store'
 import { cn } from '@/lib/utils'
 
-interface AppShellProps {
-  title?: string
-}
-
-export function AppShell({ title }: AppShellProps) {
+export function AppShell() {
   const { sidebarCollapsed } = useUiStore()
 
   return (
@@ -20,7 +16,7 @@ export function AppShell({ title }: AppShellProps) {
           sidebarCollapsed ? 'ml-16' : 'ml-60',
         )}
       >
-        <Topbar title={title} />
+        <Topbar />
         <main className="flex-1 overflow-y-auto p-6">
           <Outlet />
         </main>

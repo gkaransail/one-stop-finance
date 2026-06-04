@@ -6,28 +6,24 @@ import {
   Users,
   Brain,
   TrendingUp,
-  Search,
-  Bell,
   ChevronLeft,
   ChevronRight,
   Zap,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/stores/ui.store'
-import { useAuthStore } from '@/stores/auth.store'
 
 const NAV_ITEMS = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/themes', icon: Flame, label: 'Theme Intelligence' },
-  { to: '/options', icon: LineChart, label: 'Options Chain' },
-  { to: '/insiders', icon: Users, label: 'Insider Trades' },
-  { to: '/sentiment', icon: Brain, label: 'Sentiment' },
-  { to: '/trend', icon: TrendingUp, label: 'Trend Reversal' },
+  { to: '/themes',    icon: Flame,           label: 'Theme Intelligence' },
+  { to: '/options',   icon: LineChart,        label: 'Options Chain' },
+  { to: '/insiders',  icon: Users,            label: 'Insider Trades' },
+  { to: '/sentiment', icon: Brain,            label: 'Sentiment' },
+  { to: '/trend',     icon: TrendingUp,       label: 'Trend Reversal' },
 ]
 
 export function Sidebar() {
   const { sidebarCollapsed, toggleSidebar } = useUiStore()
-  const { user } = useAuthStore()
 
   return (
     <aside
@@ -47,20 +43,6 @@ export function Sidebar() {
           )}
         </div>
       </div>
-
-      {/* Search */}
-      {!sidebarCollapsed && (
-        <div className="px-3 pt-3">
-          <NavLink
-            to="/search"
-            className="flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] px-3 py-2 text-sm text-[var(--color-text-muted)] hover:border-[var(--color-accent-blue)] hover:text-[var(--color-text-secondary)] transition-colors"
-          >
-            <Search className="h-4 w-4 flex-shrink-0" />
-            <span>Search ticker…</span>
-            <kbd className="ml-auto rounded bg-[var(--color-bg-elevated)] px-1.5 py-0.5 text-xs">⌘K</kbd>
-          </NavLink>
-        </div>
-      )}
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-0.5">
@@ -84,34 +66,8 @@ export function Sidebar() {
         ))}
       </nav>
 
-      {/* Bottom */}
-      <div className="border-t border-[var(--color-border)] p-2 space-y-0.5">
-        <NavLink
-          to="/alerts"
-          className={({ isActive }) =>
-            cn(
-              'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
-              isActive
-                ? 'bg-[var(--color-accent-blue)]/15 text-[var(--color-accent-blue)]'
-                : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)]',
-            )
-          }
-          title={sidebarCollapsed ? 'Alerts' : undefined}
-        >
-          <Bell className="h-4 w-4 flex-shrink-0" />
-          {!sidebarCollapsed && <span>Alerts</span>}
-        </NavLink>
-
-        {!sidebarCollapsed && user?.tier === 'free' && (
-          <NavLink
-            to="/upgrade"
-            className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 px-3 py-2 text-sm text-purple-300 hover:from-purple-600/30 hover:to-blue-600/30 transition-colors"
-          >
-            <Zap className="h-4 w-4" />
-            <span>Upgrade to Pro</span>
-          </NavLink>
-        )}
-
+      {/* Collapse toggle */}
+      <div className="border-t border-[var(--color-border)] p-2">
         <button
           onClick={toggleSidebar}
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-[var(--color-text-muted)] hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-secondary)] transition-colors"
