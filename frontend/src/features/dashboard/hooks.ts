@@ -4,6 +4,7 @@ import { apiClient, type ApiResponse } from '@/lib/api-client'
 export interface ThemeScore {
   name: string
   slug: string
+  category: string
   benchmark_etf: string
   score: number
   level: 'alert' | 'watch' | 'quiet'

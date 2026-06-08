@@ -30,6 +30,7 @@ async def get_all_theme_scores(db: AsyncSession) -> list[dict]:
         rows.append({
             "name": theme.name,
             "slug": theme.slug,
+            "category": theme.category,
             "benchmark_etf": theme.benchmark_etf,
             "score": round(score, 1),
             "level": level,
