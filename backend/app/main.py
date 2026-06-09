@@ -18,6 +18,7 @@ from app.features.sentiment.router import router as sentiment_router
 from app.features.trend.router import router as trend_router
 from app.features.search.router import router as search_router
 from app.features.realtime.router import router as realtime_router
+from app.features.onchain_prediction.router import router as onchain_router
 
 API_PREFIX = "/api/v1"
 
@@ -65,6 +66,7 @@ for router in [
     sentiment_router,
     trend_router,
     search_router,
+    onchain_router,
 ]:
     app.include_router(router, prefix=API_PREFIX)
 
