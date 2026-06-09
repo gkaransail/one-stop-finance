@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom'
 import {
   Flame, Users, Brain, LineChart, TrendingUp, TrendingDown,
-  Minus, ArrowRight, Wifi, WifiOff,
+  Minus, ArrowRight, Wifi, WifiOff, Target,
 } from 'lucide-react'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Spinner } from '@/components/ui/spinner'
 import { useMarketSummary } from '@/features/landing/hooks'
 import { useThemeIntelligence, useInsiderHighlights, type ThemeScore, type InsiderHighlight } from '@/features/dashboard/hooks'
+import { useOptionsScanner, type StockScore } from '@/features/options/hooks'
 import { useRealtimeStore } from '@/stores/realtime.store'
 import { cn, formatPercent } from '@/lib/utils'
 
@@ -38,6 +39,7 @@ export function DashboardPage() {
         <ThemeIntelligencePanel />
         <InsiderHighlightsPanel />
       </div>
+      <PriceForecastPanel />
     </div>
   )
 }
@@ -325,5 +327,131 @@ function InsiderRow({ highlight: h }: { highlight: InsiderHighlight }) {
         {score}
       </div>
     </a>
+  )
+}
+
+/* ── Price Forecast Panel ─────────────────────────────────────────── */
+function PriceForecastPanel() {
+  const { data: scanner, isLoading, isError } = useOptionsScanner()
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Target className="h-5 w-5 text-cyan-400" />
+          <div>
+            <h3 className="text-base font-bold text-[var(--color-text-primary)]">Options-Implied Price Forecasts</h3>
+            <p className="text-xs text-[var(--color-text-muted)]">Target = max pain level · updated every 15 min</p>
+          </div>
+        </div>
+        <Link
+          to="/options"
+          className="flex items-center gap-1 text-xs text-[var(--color-accent-blue)] hover:underline"
+        >
+          Full chain analysis <ArrowRight className="h-3 w-3" />
+        </Link>
+      </div>
+
+      {isLoading && (
+        <div className="flex items-center gap-2 py-4 text-sm text-[var(--color-text-muted)]">
+          <Spinner className="h-4 w-4" /> Scanning 40 stocks…
+        </div>
+      )}
+
+      {isError && (
+        <p className="py-4 text-sm text-[var(--color-text-muted)]">Unable to load forecast data.</p>
+      )}
+
+      {scanner && (
+        <div className="space-y-4">
+          {/* Bullish */}
+          <div>
+            <div className="mb-2 flex items-center gap-1.5">
+              <TrendingUp className="h-3.5 w-3.5 text-emerald-400" />
+              <span className="text-xs font-semibold uppercase tracking-wide text-emerald-400">Bullish targets</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+              {scanner.bullish.slice(0, 5).map((s) => (
+                <ForecastCard key={s.symbol} stock={s} direction="bullish" />
+              ))}
+            </div>
+          </div>
+
+          {/* Bearish */}
+          <div>
+            <div className="mb-2 flex items-center gap-1.5">
+              <TrendingDown className="h-3.5 w-3.5 text-red-400" />
+              <span className="text-xs font-semibold uppercase tracking-wide text-red-400">Bearish targets</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+              {scanner.bearish.slice(0, 5).map((s) => (
+                <ForecastCard key={s.symbol} stock={s} direction="bearish" />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ForecastCard({ stock: s, direction }: { stock: StockScore; direction: 'bullish' | 'bearish' }) {
+  const isBull = direction === 'bullish'
+  const moveColor = isBull ? 'text-emerald-400' : 'text-red-400'
+  const borderColor = isBull ? 'border-emerald-500/20' : 'border-red-500/20'
+  const bgColor = isBull ? 'bg-emerald-500/5' : 'bg-red-500/5'
+  const barColor = isBull ? 'bg-emerald-400' : 'bg-red-400'
+  const confidence = Math.min(100, Math.round(Math.abs(s.score)))
+  const moveSign = s.max_pain_pct >= 0 ? '+' : ''
+
+  const fmt = (n: number) =>
+    n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+  return (
+    <Link to="/options">
+      <div className={cn(
+        'rounded-xl border p-3 transition-colors hover:bg-[var(--color-bg-elevated)]',
+        borderColor, bgColor,
+      )}>
+        {/* Header: ticker + badge */}
+        <div className="mb-3 flex items-start justify-between gap-1">
+          <span className="text-sm font-bold text-[var(--color-text-primary)]">{s.symbol}</span>
+          <Badge variant={isBull ? 'cyan' : 'red'} className="text-[9px]">
+            {isBull ? '▲' : '▼'}
+          </Badge>
+        </div>
+
+        {/* Current price — large */}
+        <div className="mb-1">
+          <p className="text-[10px] text-[var(--color-text-muted)]">Current</p>
+          <p className="text-lg font-bold text-[var(--color-text-primary)]">${fmt(s.underlying_price)}</p>
+        </div>
+
+        {/* Arrow */}
+        <div className={cn('my-1 text-center text-base font-bold', moveColor)}>
+          {isBull ? '↑' : '↓'}
+        </div>
+
+        {/* Forecast price — large + colored */}
+        <div className="mb-3">
+          <p className="text-[10px] text-[var(--color-text-muted)]">Forecast</p>
+          <p className={cn('text-lg font-bold', moveColor)}>${fmt(s.max_pain)}</p>
+          <p className={cn('text-xs font-semibold', moveColor)}>
+            {moveSign}{s.max_pain_pct.toFixed(1)}% expected
+          </p>
+        </div>
+
+        {/* Confidence bar */}
+        <div>
+          <div className="mb-1 flex items-center justify-between">
+            <span className="text-[10px] text-[var(--color-text-muted)]">Confidence</span>
+            <span className={cn('text-[10px] font-bold', moveColor)}>{confidence}%</span>
+          </div>
+          <div className="h-1 w-full overflow-hidden rounded-full bg-[var(--color-bg-elevated)]">
+            <div className={cn('h-full rounded-full', barColor)} style={{ width: `${confidence}%` }} />
+          </div>
+        </div>
+      </div>
+    </Link>
   )
 }
